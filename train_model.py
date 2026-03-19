@@ -45,9 +45,10 @@ def download_and_train():
     df = pd.read_csv(dataset_path)
     
     # Take a sample if dataset is too large to speed up local training during testing
-    if len(df) > 10000:
-        print("🔪 Sampling 10,000 rows for faster training...")
-        df = df.sample(10000, random_state=42)
+    # Using 25,000 rows for better accuracy while keeping local training fast
+    if len(df) > 25000:
+        print("🔪 Sampling 25,000 rows for robust training...")
+        df = df.sample(25000, random_state=42)
         
     print(f"Dataset Shape: {df.shape}")
     
@@ -60,8 +61,10 @@ def download_and_train():
     df['label'] = df['sentiment'].apply(lambda x: 1 if str(x).lower().strip() == 'positive' else 0)
     
     # 3. Preprocess and Vectorize
-    print("🧠 Vectorizing text data (TF-IDF)...")
-    vectorizer = TfidfVectorizer(max_features=5000, stop_words='english')
+    print("🧠 Vectorizing text data (TF-IDF with bigrams)...")
+    # CRITICAL FIX: Removed stop_words='english' so words like "not" are kept!
+    # Added ngram_range=(1,2) so the AI learns pairs like "not good"
+    vectorizer = TfidfVectorizer(max_features=10000, ngram_range=(1, 2))
     X = vectorizer.fit_transform(df['review'])
     y = df['label']
     
