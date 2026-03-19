@@ -90,10 +90,14 @@ if 'vectorizer' not in st.session_state:
 @st.cache_resource
 def load_models():
     try:
-        if os.path.exists("model.pkl") and os.path.exists("vectorizer.pkl"):
-            with open("model.pkl", "rb") as f:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        model_path = os.path.join(base_dir, "model.pkl")
+        vec_path = os.path.join(base_dir, "vectorizer.pkl")
+        
+        if os.path.exists(model_path) and os.path.exists(vec_path):
+            with open(model_path, "rb") as f:
                 model = pickle.load(f)
-            with open("vectorizer.pkl", "rb") as f:
+            with open(vec_path, "rb") as f:
                 vectorizer = pickle.load(f)
             return model, vectorizer
         return None, None
